@@ -1,0 +1,83 @@
+---
+title: "ANA 515 Assignment 2"
+author: "Banu Develioglu"
+date: "2024-06-15"
+output: html_document
+---
+
+## Section 1: Description of the Data
+
+The dataset used for this analysis is the "biden_score_2023.xlsx" file. It contains information about legislators, their party affiliation, agreement percentage with Biden, and the margin of votes for Biden in their district.
+
+## Section 2: Reading the Data into R
+
+```{r}
+library(readxl)
+library(dplyr)
+
+# Provide the correct file path
+file_path <- "C:/Users/BanuD/Documents/biden_score_2023.xlsx"
+data <- read_excel(file_path)
+
+# Display the first few rows of the dataframe
+head(data)
+
+# Clean the data: rename columns for clarity, if necessary, and ensure proper data types
+data <- data %>%
+  rename(
+    BioGuide = bioguide,
+    Name = name,
+    Chamber = chamber,
+    State = state,
+    District = district,
+    Party = party,
+    AgreePct = agree_pct,
+    BidenMargin = biden_margin
+  )
+
+# Convert any necessary columns to appropriate data types
+data$AgreePct <- as.numeric(data$AgreePct)
+data$BidenMargin <- as.numeric(data$BidenMargin)
+
+# Display the structure of the cleaned dataframe
+str(data)
+
+# Number of rows and columns
+num_rows <- nrow(data)
+num_cols <- ncol(data)
+
+# Column names and brief description
+column_info <- data.frame(
+  ColumnName = names(data),
+  Description = c(
+    "Bioguide ID of the legislator",
+    "Name of the legislator",
+    "Chamber (House or Senate)",
+    "State abbreviation",
+    "District identifier",
+    "Political party",
+    "Percentage agreement with Biden",
+    "Margin of votes for Biden in the district"
+  )
+)
+
+# Display the number of rows and columns and the column information table
+cat("This dataframe has", num_rows, "rows and", num_cols, "columns. The names of the columns and a brief description of each are in the table below:")
+knitr::kable(column_info)
+
+# Select three columns for summary statistics
+summary_data <- data %>%
+  summarise(
+    Min_AgreePct = min(AgreePct, na.rm = TRUE),
+    Max_AgreePct = max(AgreePct, na.rm = TRUE),
+    Mean_AgreePct = mean(AgreePct, na.rm = TRUE),
+    Missing_AgreePct = sum(is.na(AgreePct)),
+    Min_BidenMargin = min(BidenMargin, na.rm = TRUE),
+    Max_BidenMargin = max(BidenMargin, na.rm = TRUE),
+    Mean_BidenMargin = mean(BidenMargin, na.rm = TRUE),
+    Missing_BidenMargin = sum(is.na(BidenMargin)),
+    Missing_Party = sum(is.na(Party))
+  )
+
+# Display the summary statistics
+knitr::kable(summary_data)
